@@ -1,5 +1,9 @@
 import processing.pdf.*;
 
+int speed=24;
+float coma=4.2335;
+
+
 int dpi=72;//72; //解像度
 //float tpm=dpi/25.4;
 float tpm=0.03937*dpi;
@@ -36,7 +40,7 @@ void fileSelected(List<File> fs) {
     if (ext.equals("gif")) {
       images.add(f);
     }
-    if(ext.equals("wav")){
+    if (ext.equals("wav")) {
       bgm=f;
     }
   }
@@ -56,15 +60,20 @@ void fileSelected(List<File> fs) {
       fsList.add(img);
     }
   }
+  if (bgm!=null) {
+    create(null);
+    return;
+  }
   selectOutput("Select a file to write to:", "create");
 }
 
 
 void create(File f) {
-  if(bgm!=null){
+  if (bgm!=null) {
     initWave(bgm.getAbsolutePath());
   }
-  PGraphicsPDF pdf=(PGraphicsPDF)beginRecord(PDF, f.getAbsolutePath());
+  String pdfPath=(bgm!=null)?(bgm.getAbsolutePath().substring(0, bgm.getAbsolutePath().lastIndexOf('.'))+".pdf"):f.getAbsolutePath();
+  PGraphicsPDF pdf=(PGraphicsPDF)beginRecord(PDF, pdfPath);
   imageMode(CENTER);
   while (true) {
     background(255);
@@ -78,6 +87,7 @@ void create(File f) {
   endRecord();
   fsList=null;
   println("done.");
+  exit();
 }
 
 void create1(File f) {
@@ -103,7 +113,7 @@ void createFilms1() {
     img[i]=loadImage("C:\\Users\\gutug_000\\Dropbox\\processing\\Other\\bou/"+(i+1)+".png");
   }
   ArrayList<PImage> fs=new ArrayList<PImage>();
-  float coma=4.2335;
+
   int length=67;
   float y=6;
   boolean flg=false;
@@ -123,7 +133,7 @@ void createFilms1() {
     line(x+8.1, y+coma*67, x+8.1, y+coma*67+1);
     rect(x+6.9, y, 2, coma*67);
     noFill();
-    if(bgm!=null){
+    if (bgm!=null) {
       drawWave(x+7.5825, y+coma, y+coma*65);
     }
     textSize(2);
@@ -131,24 +141,24 @@ void createFilms1() {
   }
 }
 void createFilms(ArrayList<PImage> fs) {
-  float coma=4.2335;
   int length=67;
   float y=6;
   boolean flg=false;
   noFill();
   stroke(0);
-  strokeWeight(0.01);
+  strokeWeight(0.1);
   rect(3, 3, 18*11+3, coma*length+6);
   for (int i=0; i<18; i++) {
     float x=6+i*11;
-    fill(0);
-    line(x+8.1, y, x+8.1, y-1);
-    line(x+8.1, y+coma*67, x+8.1, y+coma*67+1);
-    rect(x+6.9, y, 2, coma*67);
-    noFill();
-    drawWave(x+7.5825, y+coma, y+coma*65);
     textSize(2);
     createFilm(x, y, 67, coma, fs, i);
+    fill(0);
+    line(x+8.05, y, x+8.1, y-1);
+    line(x+8.05, y+coma*67, x+8.1, y+coma*67+1);
+    //rect(x+6.9, y, 1, coma*67);
+    rect(x+7, y, 1.9, coma*67);
+    noFill();
+    drawWave(x+7.5825, y+coma, y+coma*66);
   }
 }
 //void createFilm(float x, float y, int length, ArrayList<PImage> fs) {
@@ -157,7 +167,7 @@ void createFilms(ArrayList<PImage> fs) {
 void createFilm(float x, float y, int length, float coma, ArrayList<PImage> fs, int index) {
   noFill();
   stroke(0);
-  strokeWeight(0.001);
+  strokeWeight(0.1);
   rect(x, y, 8, coma*length);
   for (int i=0; i<length; i++) {
     //rect(x+0.5, y+coma*(i+0.5), 1, 1);
