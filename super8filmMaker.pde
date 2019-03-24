@@ -44,6 +44,9 @@ void fileSelected(List<File> fs) {
       bgm=f;
     }
   }
+  if(images.size()<16*2){
+    exit();
+  }
   Collections.sort(images, new Comparator<File>() {
     public int compare(File a, File b) {
       int x=Integer.parseInt(a.getName().substring(0, a.getName().lastIndexOf('.')));
