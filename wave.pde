@@ -31,7 +31,7 @@ void initWave(String path) {
   }
 }
 
-ArrayList<Float> waves;
+List<Float> waves = List.of();
 
 void drawWave(float x, float min, float max) {
   //前後20個余分に配置
@@ -95,4 +95,3 @@ void drawWave(float x, float min, float max) {
     e.printStackTrace();
   }
 }
-

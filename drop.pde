@@ -2,9 +2,10 @@ import java.awt.datatransfer.*;
 import java.awt.dnd.*; 
 import java.io.*;  
 import java.util.*;
+import java.awt.Component;
 
 void drop_init() {  
-  new DropTarget(this, new DropTargetListener() {  
+  new DropTarget((Component)this.surface.getNative(), new DropTargetListener() {  
     public void dragEnter(DropTargetDragEvent event) {
     }  
     public void dragOver(DropTargetDragEvent event) {
@@ -28,4 +29,3 @@ void drop_init() {
   }
   );
 }
-

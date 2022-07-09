@@ -1,4 +1,7 @@
 import processing.pdf.*;
+import java.util.*;
+import java.util.stream.*;
+import java.util.regex.Pattern;
 
 int speed=24;
 float coma=4.2335;
@@ -15,9 +18,12 @@ int height_px=int(px(height_mm));
 ArrayList<PImage> fsList;
 File bgm=null;
 
-void setup() {
+void settings(){
   println(width_px+","+ height_px);
   size(width_px, height_px);
+}
+
+void setup() {
   scale(tpm); 
   drop_init();
   //initWave(dataPath("mix.wav"));
@@ -47,14 +53,30 @@ void fileSelected(List<File> fs) {
   if(images.size()<16*2){
     exit();
   }
+  var numGetter = Pattern.compile(".*\\(\\s*(\\d*)\\s*\\)");
+  println("1");
+
   Collections.sort(images, new Comparator<File>() {
     public int compare(File a, File b) {
-      int x=Integer.parseInt(a.getName().substring(0, a.getName().lastIndexOf('.')));
-      int y=Integer.parseInt(b.getName().substring(0, b.getName().lastIndexOf('.')));
+      int x = Optional.of(numGetter.matcher(a.getName())).map(match->{
+        while(match.find()){
+          return match.group(1);
+        }
+        return null;
+      }).map(Integer::parseInt).orElseThrow();
+      int y = Optional.of(numGetter.matcher(b.getName())).map(match->{
+        while(match.find()){
+          return match.group(1);
+        }
+        return null;
+      }).map(Integer::parseInt).orElseThrow();
+      // int x=Integer.parseInt(numGetter(a.getName())  a.getName().substring(0, a.getName().lastIndexOf('.')));
+      // int y=Integer.parseInt(b.getName().substring(0, b.getName().lastIndexOf('.')));
       return x-y;
     }
   }
   );
+  println("s");
   fsList=new ArrayList<PImage>();
   for (File f : images) {
     println(f.getName());
@@ -63,11 +85,15 @@ void fileSelected(List<File> fs) {
       fsList.add(img);
     }
   }
+  println("3");
   if (bgm!=null) {
+  println("4");
     create(null);
     return;
   }
+  println("a");
   selectOutput("Select a file to write to:", "create");
+  println("b");
 }
 
 
@@ -194,4 +220,3 @@ void createFilm(float x, float y, int length, float coma, ArrayList<PImage> fs, 
 float px(float mm) {
   return tpm*mm;
 }
-
