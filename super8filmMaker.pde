@@ -15,7 +15,7 @@ float height_mm=297;
 int width_px=int(px(width_mm));
 int height_px=int(px(height_mm));
 
-ArrayList<PImage> fsList;
+List<PImage> fsList;
 File bgm=null;
 
 void settings(){
@@ -30,6 +30,15 @@ void setup() {
   fsList=new ArrayList<PImage>();
   //fsList.add(loadImage("D:/Dropbox/processing/Other/bou/1.png"));
   //create1(new File(sketchPath("mix.pdf")));
+}
+
+class Pair<S,T>{
+  S first;
+  T second;
+  public Pair(S first, T second){
+    this.first = first;
+    this.second = second;
+  }
 }
 
 void fileSelected(List<File> fs) {
@@ -53,38 +62,56 @@ void fileSelected(List<File> fs) {
   if(images.size()<16*2){
     exit();
   }
-  var numGetter = Pattern.compile(".*\\(\\s*(\\d*)\\s*\\)");
+  // var numGetter = Pattern.compile(".*\\(\\s*(\\d*)\\s*\\)");
+  var numGetter = Pattern.compile("\\d+");
   println("1");
+  fsList =
+   images.stream().map(f->
+   new Pair<>(f, Optional.of(numGetter.matcher(f.getName())).map(match->{
+       String lastMatched = null;
+       println(f.getName());
+       while(match.find()){
+         lastMatched = match.group();
+       }
+       println(lastMatched);
+       return lastMatched;
+     }).map(Integer::parseInt).orElseThrow()))
+     .sorted((x,y)->x.second-y.second) //
+      .map(f->loadImage(f.first.getAbsolutePath())) 
+      .filter(Objects::nonNull).collect(Collectors.toList());
+    ;
 
-  Collections.sort(images, new Comparator<File>() {
-    public int compare(File a, File b) {
-      int x = Optional.of(numGetter.matcher(a.getName())).map(match->{
-        while(match.find()){
-          return match.group(1);
-        }
-        return null;
-      }).map(Integer::parseInt).orElseThrow();
-      int y = Optional.of(numGetter.matcher(b.getName())).map(match->{
-        while(match.find()){
-          return match.group(1);
-        }
-        return null;
-      }).map(Integer::parseInt).orElseThrow();
-      // int x=Integer.parseInt(numGetter(a.getName())  a.getName().substring(0, a.getName().lastIndexOf('.')));
-      // int y=Integer.parseInt(b.getName().substring(0, b.getName().lastIndexOf('.')));
-      return x-y;
-    }
-  }
-  );
-  println("s");
-  fsList=new ArrayList<PImage>();
-  for (File f : images) {
-    println(f.getName());
-    PImage img=loadImage(f.getAbsolutePath());
-    if (img!=null) {
-      fsList.add(img);
-    }
-  }
+  // Collections.sort(images, new Comparator<File>() {
+  //   public int compare(File a, File b) {
+  //     int x = Optional.of(numGetter.matcher(a.getName())).map(match->{
+  //       String lastMatched = null;
+  //       while(match.find()){
+  //         lastMatched = match.group();
+  //       }
+  //       return lastMatched;
+  //     }).map(Integer::parseInt).orElseThrow();
+  //     int y = Optional.of(numGetter.matcher(b.getName())).map(match->{
+  //       String lastMatched = null;
+  //       while(match.find()){
+  //         lastMatched = match.group();
+  //       }
+  //       return lastMatched;
+  //     }).map(Integer::parseInt).orElseThrow();
+  //     // int x=Integer.parseInt(numGetter(a.getName())  a.getName().substring(0, a.getName().lastIndexOf('.')));
+  //     // int y=Integer.parseInt(b.getName().substring(0, b.getName().lastIndexOf('.')));
+  //     return x-y;
+  //   }
+  // }
+  // );
+  // println("s");
+  // fsList=new ArrayList<PImage>();
+  // for (File f : images) {
+  //   println(f.getName());
+  //   PImage img=loadImage(f.getAbsolutePath());
+  //   if (img!=null) {
+  //     fsList.add(img);
+  //   }
+  // }
   println("3");
   if (bgm!=null) {
   println("4");
@@ -169,7 +196,7 @@ void createFilms1() {
     createFilm(x, y, 67, coma, fs, i);
   }
 }
-void createFilms(ArrayList<PImage> fs) {
+void createFilms(List<PImage> fs) {
   int length=67;
   float y=6;
   boolean flg=false;
@@ -193,7 +220,7 @@ void createFilms(ArrayList<PImage> fs) {
 //void createFilm(float x, float y, int length, ArrayList<PImage> fs) {
 //  createFilm(x, y, length, 4.2335, fs);
 //}
-void createFilm(float x, float y, int length, float coma, ArrayList<PImage> fs, int index) {
+void createFilm(float x, float y, int length, float coma, List<PImage> fs, int index) {
   noFill();
   stroke(0);
   strokeWeight(0.1);
